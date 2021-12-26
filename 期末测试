@@ -1,0 +1,43 @@
+1.并发相关
+(a)
+func main() {
+    var mu sync.Mutex
+
+    go func() {
+        fmt.Println("有点强人锁男")
+        mu.Lock()
+    }()
+
+    mu.Unlock()
+}
+这段代码在运行之后可能会报错，请解释原因
+ //主协程里的语句执行速度快于其他线程，所有主协程直接执行了 mu.Unlock()
+ -------------------------------------------------------------------------------------
+ (b)
+在go语言中使用sync.Mutex互斥锁同步是比较低级的做法，我们可以尝试使用管道Channel的堵塞来实现同步，
+
+请对下面代码添加Channel，使之可以正常输出。
+
+func main() {
+
+    go func() {
+        fmt.Println("下山的路又堵起了")
+    }()
+
+}
+//package main
+
+import (
+	"fmt"
+)
+func main() {
+	var channel = make(chan string)
+    var send="下山的路又堵起了"
+	var receive string
+	go func() {
+		channel<- send
+	}()
+	receive= <- channel
+	fmt.Println(receive)
+}
+
